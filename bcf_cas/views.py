@@ -1,7 +1,6 @@
 """CAS login/logout replacement views"""
 from datetime import datetime
-from urllib import urlencode
-import urlparse
+from urllib.parse import urljoin, urlencode
 from operator import itemgetter
 
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
@@ -83,13 +82,13 @@ def _login_url(service, ticket='ST', gateway=False):
         ticket = 'ST'
     login = LOGINS.get(ticket[:2],'login')
 
-    return urlparse.urljoin(settings.CAS_SERVER_URL, login) + '?' + urlencode(params)
+    return urljoin(settings.CAS_SERVER_URL, login) + '?' + urlencode(params)
 
 
 def _logout_url(request, next_page=None):
     """Generates CAS logout URL"""
 
-    url = urlparse.urljoin(settings.CAS_SERVER_URL, 'logout')
+    url = urljoin(settings.CAS_SERVER_URL, 'logout')
     if next_page and getattr(settings, 'CAS_PROVIDE_URL_TO_LOGOUT', True):
         protocol = ('http://', 'https://')[request.is_secure()]
         host = request.get_host()
