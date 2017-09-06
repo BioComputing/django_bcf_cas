@@ -31,7 +31,7 @@ def user_passes_test(test_func, login_url=None,
         def wrapper(request, *args, **kwargs):
             if test_func(request.user):
                 return view_func(request, *args, **kwargs)
-            elif request.user.is_authenticated():
+            elif request.user.is_authenticated:
                 return HttpResponseForbidden('<h1>Permission denied</h1>')
             else:
                 path = '%s?%s=%s' % (login_url, redirect_field_name,
@@ -61,7 +61,7 @@ def gateway():
             from cas.views import login
             request = args[0]
             
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 #Is Authed, fine
                 pass
             else:
