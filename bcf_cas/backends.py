@@ -1,8 +1,8 @@
 """CAS authentication backend"""
 
 import logging
-from urllib import urlencode, urlopen
-from urlparse import urljoin
+from urllib.parse import urlencode, urljoin
+from urllib.request import urlopen
 from xml.dom import minidom
 
 from django.conf import settings
