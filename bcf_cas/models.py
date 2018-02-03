@@ -1,5 +1,12 @@
-from urllib.parse import urljoin, urlencode
-from urllib.request import urlopen
+try:
+    # python3
+    from urllib.parse import urljoin, urlencode
+    from urllib.request import urlopen
+except ImportError:
+    # python2
+    from urlparse import urljoin
+    from urllib import urlencode, urlopen
+
 from django.db import models
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -65,7 +72,7 @@ def get_tgt_for(user):
 
 
 def delete_old_tickets(**kwargs):
-    """ Delete tickets if they are over 2 days old 
+    """ Delete tickets if they are over 2 days old
         kwargs = ['raw', 'signal', 'instance', 'sender', 'created']
     """
     sender = kwargs.get('sender', None)
