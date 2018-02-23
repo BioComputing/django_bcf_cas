@@ -44,3 +44,5 @@ Quick start
     CAS_SERVER_URL = 'https://webauth.arizona.edu/webauth/validate'
     CAS_LOGOUT_COMPLETELY = True
     CAS_PROVIDE_URL_TO_LOGOUT = True
+    
+    CAS_NO_REDIRECT = False # enable this if using a custom django admin login page

@@ -33,6 +33,9 @@ class CASMiddleware(object):
         login URL, as well as calls to django.contrib.auth.views.login and
         logout.
         """
+        # optional setting for custom admin login pages
+        if hasattr(settings, 'CAS_NO_REDIRECT') and settings.CAS_NO_REDIRECT:
+            return None
 
         if view_func == login:
             return cas_login(request, *view_args, **view_kwargs)
