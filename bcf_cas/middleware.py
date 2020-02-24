@@ -10,8 +10,13 @@ except ImportError:
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth import logout as do_logout
-from django.contrib.auth.views import login, logout
-from django.core.urlresolvers import reverse
+from django.contrib.auth import login, logout
+# from django.contrib.auth.views import LoginView, LogoutView
+
+try:
+    from django.core.urlresolvers import reverse
+except ModuleNotFoundError:
+    from django.urls import reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.core.exceptions import ImproperlyConfigured
 
@@ -23,6 +28,11 @@ __all__ = ['CASMiddleware']
 
 class CASMiddleware(object):
     """Middleware that allows CAS authentication on admin pages"""
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        return self.get_response(request)
 
     def process_request(self, request):
         """Checks that the authentication middleware is installed"""
@@ -43,6 +53,7 @@ class CASMiddleware(object):
             return None
 
         if view_func == login:
+            print("LOGIN VIEW")
             return cas_login(request, *view_args, **view_kwargs)
         elif view_func == logout:
             return cas_logout(request, *view_args, **view_kwargs)

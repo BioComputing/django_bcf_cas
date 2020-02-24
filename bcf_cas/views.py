@@ -21,11 +21,10 @@ __all__ = ['login', 'logout']
 
 def _service_url(request, redirect_to=None, gateway=False):
     """Generates application service URL for CAS"""
-
-    protocol = ('http://', 'https://')[request.is_secure()]
+    protocol = ('http://', 'https://')[int(request.is_secure())]
     host = request.get_host()
-    prefix = (('http://', 'https://')[request.is_secure()] + host)
-    service = protocol + host + request.path
+    prefix = (('http://', 'https://')[int(request.is_secure())] + host)
+    service = f'{protocol}{host}{request.path}'
     if redirect_to:
         if '?' in service:
             service += '&'
@@ -105,7 +104,6 @@ def _logout_url(request, next_page=None):
 
 def login(request, next_page=None, required=False, gateway=False):
     """Forwards to CAS login URL or verifies CAS ticket"""
-
     if not next_page:
         next_page = _redirect_url(request)
     if request.user.is_authenticated:
@@ -123,11 +121,15 @@ def login(request, next_page=None, required=False, gateway=False):
 
         if user is not None:
             #Has ticket, logs in fine
-            auth.login(request, user)
-            if settings.CAS_PROXY_CALLBACK:
-                proxy_callback(request)
-            #keep urls
-            return HttpResponseRedirect(next_page)
+            if user.is_netid:
+                auth.login(request, user)
+                if settings.CAS_PROXY_CALLBACK:
+                    proxy_callback(request)
+                #keep urls
+                return HttpResponseRedirect(next_page)
+            else:
+                error = "<h1>Forbidden</h1><p>Login failed.</p>"
+                return HttpResponseForbidden(error)
         elif settings.CAS_RETRY_LOGIN or required:
             #Has ticket,
             if gateway:
